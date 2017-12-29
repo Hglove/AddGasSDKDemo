@@ -1,0 +1,65 @@
+apply plugin: 'com.android.library'
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    compile 'com.android.support:appcompat-v7:26.+'
+    testCompile 'junit:junit:4.12'
+    compile 'io.reactivex:rxjava:+'
+    compile 'com.squareup.retrofit:adapter-rxjava:+'
+    compile 'com.trello:rxlifecycle:+'
+    compile 'com.trello:rxlifecycle-components:+'
+    compile 'com.squareup.retrofit2:retrofit:+'
+    compile 'com.squareup.retrofit2:converter-gson:+'
+    compile 'com.squareup.retrofit2:adapter-rxjava:+'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+}
+def SDK_BASENAME = "AddGasSdk";
+def SDK_VERSION = "_V1.0";
+def SDK_NAME=SDK_BASENAME+SDK_VERSION;
+def sdkDestinationPath = "build/outputs/jar/";
+//def zipFile = file('build/intermediates/transforms/proguard/release/jars/3/3/main.jar')
+def zipFile = file('build/intermediates/bundles/default/classes.jar')
+//task makeJar(type: proguard.gradle.ProGuardTask,dependsOn:"build") {
+//
+//    delete sdkDestinationPath+SDK_NAME+".jar" //删除之前编译混淆jar包
+//
+//    injars zipFile//项目编译但未混淆的jar
+//
+//    outjars sdkDestinationPath+SDK_NAME+".jar"//混淆后的jar路径
+//
+//    configuration'proguard-rules.pro'// 混淆配置文件
+//
+//}
+task makeJar(type: Copy) {
+    delete sdkDestinationPath+SDK_NAME+".jar"
+    from(zipFile)
+    into('build/outputs/jar/')
+    include('classes.jar')
+    rename ('classes.jar', sdkDestinationPath+SDK_NAME+".jar")
+}
+
+makeJar.dependsOn(build)
